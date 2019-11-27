@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <property name="now" value="now()" dbms="h2"/>
+    <property name="now" value="current_timestamp" dbms="postgresql"/>
+
+    <changeSet id="20191020_2" author="hu">
+
+        <addForeignKeyConstraint baseColumnNames="parent_id"
+                                 baseTableName="space"
+                                 constraintName="fk_space_parent_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="space"/>
+
+        <addForeignKeyConstraint baseColumnNames="space_id"
+                                 baseTableName="device"
+                                 constraintName="fk_device_spce_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="space"/>
+
+    </changeSet>
+
+</databaseChangeLog>

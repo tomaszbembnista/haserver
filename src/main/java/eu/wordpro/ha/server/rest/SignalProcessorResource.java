@@ -1,0 +1,54 @@
+package eu.wordpro.ha.server.rest;
+
+import eu.wordpro.ha.server.service.SignalProcessorService;
+import eu.wordpro.ha.server.service.dto.SignalProcessorDTO;
+import eu.wordpro.ha.server.service.dto.SpaceDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+
+import javax.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api")
+public class SignalProcessorResource {
+
+
+    @Autowired
+    SignalProcessorService signalProcessorService;
+
+    @PostMapping("/signal-processors")
+    public ResponseEntity<SignalProcessorDTO> createSignalProcessor(@Valid @RequestBody SignalProcessorDTO signalProcessor) throws URISyntaxException {
+        if (signalProcessor.getId() != null) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "A new space cannot already have an ID");
+        }
+        SignalProcessorDTO savedSpace = signalProcessorService.save(signalProcessor);
+        return ResponseEntity.created(new URI("/api/signal-processors/" + savedSpace.getId()))
+                .body(savedSpace);
+    }
+
+    @PutMapping("/signal-processors")
+    public ResponseEntity<SignalProcessorDTO> updateSignalProcessor(@Valid @RequestBody SignalProcessorDTO space) throws URISyntaxException {
+        SignalProcessorDTO savedSpace = signalProcessorService.save(space);
+        return ResponseEntity.created(new URI("/api/signal-processors/" + savedSpace.getId()))
+                .body(savedSpace);
+    }
+
+    @GetMapping("/signal-processors")
+    public List<SignalProcessorDTO> getSignalProcessors() throws URISyntaxException {
+        return signalProcessorService.findAll();
+    }
+
+    @GetMapping("/signal-processors/{id}")
+    public ResponseEntity<SignalProcessorDTO> getSignalProcessor(@Valid @PathVariable Long id) throws URISyntaxException {
+        Optional<SignalProcessorDTO> result = signalProcessorService.findOne(id);
+        return ResponseUtil.wrapOrNotFound(result);
+    }
+
+}
