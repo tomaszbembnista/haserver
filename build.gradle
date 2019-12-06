@@ -10,6 +10,7 @@ sourceCompatibility = '1.8'
 
 repositories {
 	mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
@@ -34,6 +35,8 @@ dependencies {
 	compile group: 'org.eclipse.paho', name: 'org.eclipse.paho.client.mqttv3', version: '1.2.2'
 
 	compile 'org.reflections:reflections:0.9.11'
+
+    compile group: 'eu.wordpro.tha', name: 'api', version :'0.0.1-SNAPSHOT'
 
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
