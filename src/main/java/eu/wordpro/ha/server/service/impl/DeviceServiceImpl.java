@@ -1,6 +1,7 @@
 package eu.wordpro.ha.server.service.impl;
 
 import eu.wordpro.ha.api.InvalidSignalException;
+import eu.wordpro.ha.api.SignalProcessingException;
 import eu.wordpro.ha.api.SignalProcessorData;
 import eu.wordpro.ha.api.model.StringSignalProcessorData;
 import eu.wordpro.ha.server.domain.Device;
@@ -114,6 +115,9 @@ public class DeviceServiceImpl implements DeviceService {
         try {
             result = instance.processInput(inputs);
         } catch (InvalidSignalException e) {
+            logger.warn("Signal is not valid. Error: {}", e.getMessage());
+            return;
+        } catch (SignalProcessingException e) {
             logger.warn("Signal could not be processed. Error: {}", e.getMessage());
             return;
         }

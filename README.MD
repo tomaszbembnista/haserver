@@ -1,10 +1,10 @@
-##Home Automation
+## Home Automation 
 
 Application, which allows to integrate steering devices and sensors into one system.  
 Based on spring boot. Mqtt is a protocol used to integrate devices. 
 HTTP interface makes possible to configure the system. Application logic is provided by plugins.
 
-###Domain model
+### Domain model
 Package *eu.wordpro.ha.server.domain*
 
 #### Space
@@ -17,7 +17,7 @@ Signal processor is an instance of a plugin. Describes how to instantiate and co
 Processing chain is attached to device. Allows to process data send from device with a chain of signal processors. 
 Result of the processing can be send to other devices.
 
-###Plugin development
+### Plugin development
 Plugin is an implementation of interface *eu.wordpro.ha.api.SignalProcessor*. Plugin defines own configuration format and format of exchanged data.
 For implementation details please refer documentation of *eu.wordpro.ha.api.SignalProcessor*.  
 
@@ -30,6 +30,12 @@ Topics used to communicate between devices are assembled from spaces hierarchy a
 
 
 ### Server development
+#### Dependencies
+##### Home automation API
+Clone from https://github.com/tomaszbembnista/haapi and install to the local repository with
+    
+    gradlew install
+    
 #### Database
 Server requires a Postgresql database. Default access to the database is configured in *application.properties*. Database migration is done with liquibase. Migration configuration files are placed in *resources/db.changelog*
 #### Starting application during development
