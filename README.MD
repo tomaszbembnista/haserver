@@ -17,13 +17,6 @@ Signal processor is an instance of a plugin. Describes how to instantiate and co
 Processing chain is attached to device. Allows to process data send from device with a chain of signal processors. 
 Result of the processing can be send to other devices.
 
-### Plugin development
-Plugin is an implementation of interface *eu.wordpro.ha.api.SignalProcessor*. Plugin defines own configuration format and format of exchanged data.
-For implementation details please refer documentation of *eu.wordpro.ha.api.SignalProcessor*.  
-
-#### Plugin installation
-Jar containing the plugin has to be added to the classpath of the server application.
-
 ### MQTT
 The application requires MQTT Broker installation. Access to the broker is configurable as spring boot property *ha.mqtt.brokerUri*. Default configuration is placed in *application.properties* . Refer the [documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-external-config) for details about externalized configuration.  
 Topics used to communicate between devices are assembled from spaces hierarchy and device slugs. Signals sent from device are published on topic with suffix *up*, incoming signals are published on topic with prefix *down*, for example */groundfloor/kitchen/switch1/down*
@@ -51,6 +44,13 @@ Server exposes a swagger interface, which makes easier client development. API d
 
     http://localhost:8100/v2/api-docs
     http://localhost:8100/swagger-ui.html
+    
+### Plugin development
+Plugin is an implementation of interface *eu.wordpro.ha.api.SignalProcessor*. from home automation API. Plugin defines own configuration format and format of exchanged data.
+For implementation details please refer documentation of *eu.wordpro.ha.api.SignalProcessor*.  
+
+#### Plugin installation
+Jar containing the plugin has to be added to the classpath of the server application.
     
 ### Others 
 Starting mosquitto on windows
