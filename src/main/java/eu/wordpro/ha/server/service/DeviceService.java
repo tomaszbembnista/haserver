@@ -7,5 +7,5 @@ import java.util.LinkedList;
 
 public interface DeviceService extends Service<DeviceDTO> {
     String getMqttTopic(Long deviceId);
-    void executeProcessingChains(Long deviceId, LinkedList<SignalProcessorData> inputs);
+    void processInputData(Long deviceId, LinkedList<SignalProcessorData> inputs);
 }

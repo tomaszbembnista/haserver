@@ -25,7 +25,7 @@ public class DeviceMqttListener implements IMqttMessageListener {
         rawData.setName("input");
         LinkedList<SignalProcessorData> input = new LinkedList<>();
         input.add(rawData);
-        deviceService.executeProcessingChains(device.getId(), input);
+        deviceService.processInputData(device.getId(), input);
     }
 
     public String getTopic(){

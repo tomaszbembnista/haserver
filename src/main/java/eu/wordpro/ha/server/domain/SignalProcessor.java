@@ -2,6 +2,8 @@ package eu.wordpro.ha.server.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "signal_processor")
@@ -28,6 +30,9 @@ public class SignalProcessor {
 
     @Column(name="state")
     private String state;
+
+    @OneToMany(mappedBy = "signalProcessor")
+    private Set<ProcessingChain> processingChains = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -77,6 +82,14 @@ public class SignalProcessor {
         this.state = state;
     }
 
+    public Set<ProcessingChain> getProcessingChains() {
+        return processingChains;
+    }
+
+    public void setProcessingChains(Set<ProcessingChain> processingChains) {
+        this.processingChains = processingChains;
+    }
+
     @Override
     public String toString() {
         return "SignalProcessor{" +
@@ -86,6 +99,7 @@ public class SignalProcessor {
                 ", status='" + status + '\'' +
                 ", configuration='" + configuration + '\'' +
                 ", state='" + state + '\'' +
+                ", processingChains=" + processingChains +
                 '}';
     }
 }

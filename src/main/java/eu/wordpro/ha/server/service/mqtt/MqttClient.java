@@ -2,6 +2,7 @@ package eu.wordpro.ha.server.service.mqtt;
 
 import eu.wordpro.ha.server.service.DeviceService;
 import eu.wordpro.ha.server.service.dto.DeviceDTO;
+import eu.wordpro.ha.server.service.impl.ThreadPoolsProvider;
 import org.eclipse.paho.client.mqttv3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,17 +26,19 @@ public class MqttClient {
     @Autowired
     private DeviceService deviceService;
 
+    @Autowired
+    private ThreadPoolsProvider threadPoolsProvider;
+
     @Value("${ha.mqtt.brokerUri}")
     private String brokerUrl;
 
-    ExecutorService executorService = Executors.newFixedThreadPool(10);
-    ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(10);
+
     MqttAsyncClient client;
 
     @EventListener(ApplicationReadyEvent.class)
     private void setupConnection() throws MqttException {
         client = new MqttAsyncClient(brokerUrl, "HA_SERVER");
-        executorService.submit(() -> this.connect(client));
+        threadPoolsProvider.getExecutorService().submit(() -> this.connect(client));
     }
 
     private void connect(MqttAsyncClient client){
@@ -51,7 +54,7 @@ public class MqttClient {
             log.info("Connected to mqtt broker");
         } catch (MqttException e) {
             log.warn("Timeout during waiting on connection completion. Scheduling next try in 30 seconds");
-            scheduledExecutorService.schedule(() -> connect(client), 30, TimeUnit.SECONDS);
+            threadPoolsProvider.getScheduledExecutorService().schedule(() -> connect(client), 30, TimeUnit.SECONDS);
             return;
         }
 
@@ -76,7 +79,7 @@ public class MqttClient {
     }
 
     public void sendData(byte[] toSend, String topic){
-        executorService.submit(() ->{
+        threadPoolsProvider.getExecutorService().submit(() ->{
             try {
                 IMqttDeliveryToken token = client.publish(topic, toSend, 2, false);
                 token.waitForCompletion(10000);

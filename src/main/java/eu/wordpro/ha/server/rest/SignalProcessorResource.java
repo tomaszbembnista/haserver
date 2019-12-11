@@ -1,5 +1,7 @@
 package eu.wordpro.ha.server.rest;
 
+import eu.wordpro.ha.api.model.ProcessorOperationArgument;
+import eu.wordpro.ha.api.model.ProcessorOperationDesc;
 import eu.wordpro.ha.server.service.SignalProcessorService;
 import eu.wordpro.ha.server.service.dto.SignalProcessorDTO;
 import eu.wordpro.ha.server.service.dto.SpaceDTO;
@@ -34,21 +36,31 @@ public class SignalProcessorResource {
     }
 
     @PutMapping("/signal-processors")
-    public ResponseEntity<SignalProcessorDTO> updateSignalProcessor(@Valid @RequestBody SignalProcessorDTO space) throws URISyntaxException {
+    public ResponseEntity<SignalProcessorDTO> updateSignalProcessor(@Valid @RequestBody SignalProcessorDTO space) {
         SignalProcessorDTO savedSpace = signalProcessorService.save(space);
-        return ResponseEntity.created(new URI("/api/signal-processors/" + savedSpace.getId()))
-                .body(savedSpace);
+        return ResponseEntity.ok(savedSpace);
     }
 
     @GetMapping("/signal-processors")
-    public List<SignalProcessorDTO> getSignalProcessors() throws URISyntaxException {
+    public List<SignalProcessorDTO> getSignalProcessors() {
         return signalProcessorService.findAll();
     }
 
     @GetMapping("/signal-processors/{id}")
-    public ResponseEntity<SignalProcessorDTO> getSignalProcessor(@Valid @PathVariable Long id) throws URISyntaxException {
+    public ResponseEntity<SignalProcessorDTO> getSignalProcessor(@Valid @PathVariable Long id) {
         Optional<SignalProcessorDTO> result = signalProcessorService.findOne(id);
         return ResponseUtil.wrapOrNotFound(result);
+    }
+
+    @GetMapping("/signal-processors/{id}/operations")
+    public List<ProcessorOperationDesc> getSignalProcessorOperations(@Valid @PathVariable Long id) {
+        return signalProcessorService.getPossibleOperations(id);
+    }
+
+    @PutMapping("/signal-processors/{id}/operations/{name}")
+    public ResponseEntity<String> executeSignalProcessorOperations(@Valid @PathVariable Long id, @Valid @PathVariable String name, @Valid @RequestBody List<ProcessorOperationArgument> arguments) {
+        String result = signalProcessorService.executeOperation(id, name, arguments);
+        return ResponseEntity.ok(result);
     }
 
 }
