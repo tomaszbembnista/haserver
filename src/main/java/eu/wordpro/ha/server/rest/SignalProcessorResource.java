@@ -58,8 +58,8 @@ public class SignalProcessorResource {
     }
 
     @PutMapping("/signal-processors/{id}/operations/{name}")
-    public ResponseEntity<String> executeSignalProcessorOperations(@Valid @PathVariable Long id, @Valid @PathVariable String name, @Valid @RequestBody List<ProcessorOperationArgument> arguments) {
-        String result = signalProcessorService.executeOperation(id, name, arguments);
+    public ResponseEntity<String> executeSignalProcessorOperations(@Valid @PathVariable Long id, @Valid @PathVariable String name, @Valid @RequestBody List<ProcessorOperationArgument> operationArguments) {
+        String result = signalProcessorService.executeOperation(id, name, operationArguments);
         return ResponseEntity.ok(result);
     }
 

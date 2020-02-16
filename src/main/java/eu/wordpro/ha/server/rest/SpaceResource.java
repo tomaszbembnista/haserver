@@ -1,6 +1,8 @@
 package eu.wordpro.ha.server.rest;
 
+import eu.wordpro.ha.server.service.DeviceService;
 import eu.wordpro.ha.server.service.SpaceService;
+import eu.wordpro.ha.server.service.dto.DeviceDTO;
 import eu.wordpro.ha.server.service.dto.SpaceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,11 +18,15 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin("*")
 public class SpaceResource {
 
 
     @Autowired
     SpaceService spaceService;
+
+    @Autowired
+    DeviceService deviceService;
 
     @PostMapping("/spaces")
     public ResponseEntity<SpaceDTO> createSpace(@Valid @RequestBody SpaceDTO space) throws URISyntaxException {
@@ -44,10 +50,42 @@ public class SpaceResource {
         return spaceService.findAll();
     }
 
+    @GetMapping("/spaces/{id}/spaces")
+    public List<SpaceDTO> getSpacesBelongingToSpace(@Valid @PathVariable Long id) throws URISyntaxException {
+        System.out.println("Getting spaces");
+        if (id == null || id.equals(new Long(-1))){
+            System.out.println("Getting spaces with null");
+            return spaceService.findSpacesIn(null);
+        }
+        return spaceService.findSpacesIn(id);
+    }
+
+    @GetMapping("/spaces/{id}/devices")
+    public List<DeviceDTO> getDevicesBelongingToSpace(@Valid @PathVariable Long id) throws URISyntaxException {
+        System.out.println("Getting devices");
+        if (id == null || id.equals(new Long(-1))){
+            System.out.println("Getting spaces with null");
+            return deviceService.findDevicesInSpace(null);
+        }
+        return deviceService.findDevicesInSpace(id);
+    }
+
     @GetMapping("/spaces/{id}")
     public ResponseEntity<SpaceDTO> getSpace(@Valid @PathVariable Long id) throws URISyntaxException {
         Optional<SpaceDTO> result = spaceService.findOne(id);
         return ResponseUtil.wrapOrNotFound(result);
+    }
+
+    /**
+     * DELETE  /bots/:id : delete the "id" bot.
+     *
+     * @param id the id of the botDTO to delete
+     * @return the ResponseEntity with status 200 (OK)
+     */
+    @DeleteMapping("/spaces/{id}")
+    public ResponseEntity<Void> deleteSpace(@PathVariable Long id) {
+        spaceService.delete(id);
+        return ResponseEntity.ok().build();
     }
 
 }

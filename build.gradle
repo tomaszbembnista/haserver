@@ -37,6 +37,7 @@ dependencies {
 	compile 'org.reflections:reflections:0.9.11'
 
     compile group: 'eu.wordpro.ha', name: 'api', version :'0.0.1'
+	compile group: 'eu.wordpro.ha', name: 'plugins', version :'0.0.1'
 
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {

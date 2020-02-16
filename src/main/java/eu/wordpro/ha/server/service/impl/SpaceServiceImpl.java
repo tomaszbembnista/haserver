@@ -50,4 +50,11 @@ public class SpaceServiceImpl implements SpaceService {
         spaceRepository.deleteById(id);
     }
 
+    @Override
+    public List<SpaceDTO> findSpacesIn(Long spaceId) {
+        return spaceRepository.findAllByParentId(spaceId)
+                .stream()
+                .map(spaceMapper::toDto)
+                .collect(Collectors.toList());
+    }
 }

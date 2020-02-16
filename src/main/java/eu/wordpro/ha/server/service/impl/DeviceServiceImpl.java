@@ -95,5 +95,13 @@ public class DeviceServiceImpl implements DeviceService {
         }
     }
 
+    @Override
+    public List<DeviceDTO> findDevicesInSpace(Long id) {
+        return deviceRepository.findAllBySpaceId(id)
+                .stream()
+                .map(deviceMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 
 }

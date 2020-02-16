@@ -18,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin("*")
 public class DeviceResource {
 
 
@@ -50,6 +51,18 @@ public class DeviceResource {
     public ResponseEntity<DeviceDTO> getDevice(@Valid @PathVariable Long id) throws URISyntaxException {
         Optional<DeviceDTO> result = deviceService.findOne(id);
         return ResponseUtil.wrapOrNotFound(result);
+    }
+
+    /**
+     * DELETE  /bots/:id : delete the "id" bot.
+     *
+     * @param id the id of the botDTO to delete
+     * @return the ResponseEntity with status 200 (OK)
+     */
+    @DeleteMapping("/devices/{id}")
+    public ResponseEntity<Void> deleteDevice(@PathVariable Long id) {
+        deviceService.delete(id);
+        return ResponseEntity.ok().build();
     }
 
 }
