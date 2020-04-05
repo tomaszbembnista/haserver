@@ -36,8 +36,12 @@ dependencies {
 
 	compile 'org.reflections:reflections:0.9.11'
 
-    compile group: 'eu.wordpro.ha', name: 'api', version :'0.0.1'
-	compile group: 'eu.wordpro.ha', name: 'plugins', version :'0.0.1'
+    implementation group: 'eu.wordpro.ha', name: 'api', version :'0.0.1'
+	implementation group: 'eu.wordpro.ha', name: 'plugins', version :'0.0.1'
+
+	// https://mvnrepository.com/artifact/commons-io/commons-io
+	compile group: 'commons-io', name: 'commons-io', version: '2.6'
+
 
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {

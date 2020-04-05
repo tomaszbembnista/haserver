@@ -6,4 +6,7 @@ import java.util.List;
 
 public interface PluginService {
     List<PluginDTO> findAll();
+    PluginDTO findByClassName(String className);
+    String getDocumentationByClassName(String className);
+    void clearCache();
 }

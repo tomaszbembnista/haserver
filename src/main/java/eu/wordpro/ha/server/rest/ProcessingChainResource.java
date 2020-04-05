@@ -17,6 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin("*")
 public class ProcessingChainResource {
 
 
@@ -35,9 +36,9 @@ public class ProcessingChainResource {
 
     @PutMapping("/processing-chains")
     public ResponseEntity<ProcessingChainDTO> updateProcessingChain(@Valid @RequestBody ProcessingChainDTO processingChainDTO) throws URISyntaxException {
-        ProcessingChainDTO savedSpace = processingChainService.save(processingChainDTO);
-        return ResponseEntity.created(new URI("/api/processing-chains/" + savedSpace.getId()))
-                .body(savedSpace);
+        ProcessingChainDTO savedElement = processingChainService.save(processingChainDTO);
+        return ResponseEntity.created(new URI("/api/processing-chains/" + savedElement.getId()))
+                .body(savedElement);
     }
 
     @GetMapping("/processing-chains")
@@ -46,9 +47,19 @@ public class ProcessingChainResource {
     }
 
     @GetMapping("/processing-chains/{id}")
-    public ResponseEntity<ProcessingChainDTO> getSignalProcessor(@Valid @PathVariable Long id) throws URISyntaxException {
+    public ResponseEntity<ProcessingChainDTO> getProcessingChain(@Valid @PathVariable Long id) throws URISyntaxException {
         Optional<ProcessingChainDTO> result = processingChainService.findOne(id);
         return ResponseUtil.wrapOrNotFound(result);
+    }
+
+    @GetMapping("/processing-chains/{id}/steps")
+    public List<ProcessingChainDTO> getProcessingChainSteps(@Valid @PathVariable Long id) throws URISyntaxException {
+        return processingChainService.findAllStepsOfProcessingChain(id);
+    }
+
+    @DeleteMapping("/processing-chains/{id}")
+    public void deleteProcessingChainStep(@Valid @PathVariable Long id) throws URISyntaxException {
+        processingChainService.delete(id);
     }
 
 }

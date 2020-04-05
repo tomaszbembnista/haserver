@@ -19,6 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin("*")
 public class SignalProcessorResource {
 
 
@@ -61,6 +62,11 @@ public class SignalProcessorResource {
     public ResponseEntity<String> executeSignalProcessorOperations(@Valid @PathVariable Long id, @Valid @PathVariable String name, @Valid @RequestBody List<ProcessorOperationArgument> operationArguments) {
         String result = signalProcessorService.executeOperation(id, name, operationArguments);
         return ResponseEntity.ok(result);
+    }
+
+    @DeleteMapping("/signal-processors/{id}")
+    public void deleteSignalProcessor(@Valid @PathVariable Long id) {
+        signalProcessorService.delete(id);
     }
 
 }

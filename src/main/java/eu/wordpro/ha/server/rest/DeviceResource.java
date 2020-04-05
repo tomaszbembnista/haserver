@@ -1,9 +1,9 @@
 package eu.wordpro.ha.server.rest;
 
 import eu.wordpro.ha.server.service.DeviceService;
-import eu.wordpro.ha.server.service.SpaceService;
+import eu.wordpro.ha.server.service.ProcessingChainService;
 import eu.wordpro.ha.server.service.dto.DeviceDTO;
-import eu.wordpro.ha.server.service.dto.SpaceDTO;
+import eu.wordpro.ha.server.service.dto.ProcessingChainDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +24,9 @@ public class DeviceResource {
 
     @Autowired
     DeviceService deviceService;
+
+    @Autowired
+    ProcessingChainService processingChainService;
 
     @PostMapping("/devices")
     public ResponseEntity<DeviceDTO> createDevice(@Valid @RequestBody DeviceDTO device) throws URISyntaxException {
@@ -51,6 +54,11 @@ public class DeviceResource {
     public ResponseEntity<DeviceDTO> getDevice(@Valid @PathVariable Long id) throws URISyntaxException {
         Optional<DeviceDTO> result = deviceService.findOne(id);
         return ResponseUtil.wrapOrNotFound(result);
+    }
+
+    @GetMapping("/devices/{id}/output-processing-chains")
+    public List<ProcessingChainDTO> getOutputProcessingChains(@Valid @PathVariable Long id) throws URISyntaxException {
+        return processingChainService.findProcessingChainsByInputDevice(id);
     }
 
     /**

@@ -3,9 +3,11 @@ package eu.wordpro.ha.server.service.impl;
 import eu.wordpro.ha.api.InvalidSignalException;
 import eu.wordpro.ha.api.SignalProcessingException;
 import eu.wordpro.ha.api.SignalProcessorData;
+import eu.wordpro.ha.server.domain.Device;
 import eu.wordpro.ha.server.domain.ProcessingChain;
 import eu.wordpro.ha.server.domain.SignalProcessor;
 import eu.wordpro.ha.server.repository.ProcessingChainRepository;
+import eu.wordpro.ha.server.rest.error.NotFoundException;
 import eu.wordpro.ha.server.service.DeviceService;
 import eu.wordpro.ha.server.service.ProcessingChainService;
 import eu.wordpro.ha.server.service.dto.ProcessingChainDTO;
@@ -18,6 +20,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -68,6 +71,18 @@ public class ProcessingChainServiceImpl implements ProcessingChainService {
 
     @Override
     public void delete(Long id) {
+        ProcessingChain elemToDelete = processingChainRepository.findById(id).orElseThrow(() -> new RuntimeException());
+        Device deviceFeedingTheElement = elemToDelete.getInputDevice();
+        ProcessingChain nextInProcessingChain = elemToDelete.getNext();
+        if (deviceFeedingTheElement != null && nextInProcessingChain != null) { //element is first one in processing chain, attaching next one to device
+            nextInProcessingChain.setInputDevice(deviceFeedingTheElement);
+            processingChainRepository.save(nextInProcessingChain);
+        }
+        List<ProcessingChain> allReferencingStep = processingChainRepository.findAllByNextId(id);
+        for (ProcessingChain step: allReferencingStep) {
+            step.setNext(nextInProcessingChain);
+            processingChainRepository.save(step);
+        }
         processingChainRepository.deleteById(id);
     }
 
@@ -111,5 +126,30 @@ public class ProcessingChainServiceImpl implements ProcessingChainService {
             logger.debug("Sending message to topic {}", topic);
             mqttClient.sendData(result.toBytes(), topic);
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProcessingChainDTO> findProcessingChainsByInputDevice(Long deviceId) {
+        return processingChainRepository.findAllByInputDeviceId(deviceId)
+                .stream()
+                .map(processingChainMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProcessingChainDTO> findAllStepsOfProcessingChain(Long rootId) {
+        List<ProcessingChain> allSteps = new ArrayList<>();
+        ProcessingChain currentItem = processingChainRepository.findById(rootId).orElseThrow(() -> new NotFoundException());
+        allSteps.add(currentItem);
+        currentItem = currentItem.getNext();
+        while (currentItem != null) {
+            allSteps.add(currentItem);
+            currentItem = currentItem.getNext();
+        }
+        return allSteps.stream()
+                .map(processingChainMapper::toDto)
+                .collect(Collectors.toList());
     }
 }

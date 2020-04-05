@@ -5,9 +5,11 @@ import eu.wordpro.ha.server.domain.Device;
 import eu.wordpro.ha.server.domain.ProcessingChain;
 import eu.wordpro.ha.server.domain.Space;
 import eu.wordpro.ha.server.repository.DeviceRepository;
+import eu.wordpro.ha.server.repository.ProcessingChainRepository;
 import eu.wordpro.ha.server.service.DeviceService;
 import eu.wordpro.ha.server.service.ProcessingChainService;
 import eu.wordpro.ha.server.service.dto.DeviceDTO;
+import eu.wordpro.ha.server.service.dto.ProcessingChainDTO;
 import eu.wordpro.ha.server.service.mapper.DeviceMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,9 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Autowired
     ProcessingChainService processingChainService;
+
+    @Autowired
+    ProcessingChainRepository processingChainRepository;
 
 
 
@@ -102,6 +107,8 @@ public class DeviceServiceImpl implements DeviceService {
                 .map(deviceMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+
 
 
 }
