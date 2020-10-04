@@ -2,6 +2,7 @@ package eu.wordpro.ha.server.service.impl;
 
 import eu.wordpro.ha.api.SignalProcessorData;
 import eu.wordpro.ha.api.model.OperationExecutionResult;
+import eu.wordpro.ha.api.model.ProcessingData;
 import eu.wordpro.ha.api.model.ProcessorOperationArgument;
 import eu.wordpro.ha.api.model.ProcessorOperationDesc;
 import eu.wordpro.ha.server.domain.ProcessingChain;
@@ -95,10 +96,10 @@ public class SignalProcessorServiceImpl implements SignalProcessorService {
         }
         threadPoolsProvider.getExecutorService().submit(() -> {
             for (ProcessingChain processingChain : signalProcessor.getProcessingChains()) {
-                LinkedList<SignalProcessorData> signals = new LinkedList<>();
-                signals.add(signalProcessorData);
+                ProcessingData processingData = new ProcessingData();
+                processingData.add(signalProcessorData);
                 processingChainService.sendDataToOuputDevice(processingChain, signalProcessorData);
-                processingChainService.executeProcessingChain(processingChain.getNext(), signals);
+                processingChainService.executeProcessingChain(processingChain.getNext(), processingData);
             }
         });
     }

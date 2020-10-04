@@ -3,6 +3,7 @@ package eu.wordpro.ha.server.service.impl;
 import eu.wordpro.ha.api.InvalidSignalException;
 import eu.wordpro.ha.api.SignalProcessingException;
 import eu.wordpro.ha.api.SignalProcessorData;
+import eu.wordpro.ha.api.model.ProcessingData;
 import eu.wordpro.ha.server.domain.Device;
 import eu.wordpro.ha.server.domain.ProcessingChain;
 import eu.wordpro.ha.server.domain.SignalProcessor;
@@ -20,6 +21,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -87,32 +89,46 @@ public class ProcessingChainServiceImpl implements ProcessingChainService {
     }
 
     @Override
-    public void executeProcessingChain(ProcessingChain processingChain, LinkedList<SignalProcessorData> inputs) {
+    public void executeProcessingChain(ProcessingChain processingChain, ProcessingData inputs) {
+        logger.info("Executing processing chain element.");
         if (processingChain == null) {
+            logger.info("Processing chain element is null.");
             return;
         }
         SignalProcessor signalProcessorDesc = processingChain.getSignalProcessor();
         if (signalProcessorDesc == null) {
+            logger.warn("Description of signal processor in next chain element is null");
             return;
         }
         eu.wordpro.ha.api.SignalProcessor instance = signalProcessorInstancesManager.getInstance(signalProcessorDesc);
+        logger.info("Dupa kupa {}", instance);
         if (instance == null) {
+            logger.warn("Instance of signal processor in next chain element is null");
             return;
         }
-        logger.debug("Signal processor {}:{} instantiated", signalProcessorDesc.getName(), signalProcessorDesc.getClassName());
+        logger.info("Dupa kupa 1");
+        logger.info("Signal processor {}:{} instantiated", signalProcessorDesc.getName(), signalProcessorDesc.getClassName());
         SignalProcessorData result;
         try {
+            logger.info("Dupa kupa 11");
             result = instance.processInput(inputs);
+            logger.info("Dupa kupa 111");
         } catch (InvalidSignalException e) {
+            logger.info("Dupa kupa 2");
             logger.warn("Signal is not valid. Error: {}", e.getMessage());
             return;
         } catch (SignalProcessingException e) {
+            logger.info("Dupa kupa 3");
             logger.warn("Signal could not be processed. Error: {}", e.getMessage());
             return;
         }
-        logger.debug("Signal processor {} done.", signalProcessorDesc.getName());
+        catch (Exception e) {
+            logger.info("Dupa kupa 33");
+            e.printStackTrace();
+            return;
+        }
+        logger.info("Signal processor {} done.", signalProcessorDesc.getName());
         if (result != null) {
-            result.setName(signalProcessorDesc.getName());
             inputs.add(result);
         }
         sendDataToOuputDevice(processingChain, result);
@@ -124,7 +140,11 @@ public class ProcessingChainServiceImpl implements ProcessingChainService {
         if (processingChain.getOutputDevice() != null) {
             String topic = deviceService.getMqttTopic(processingChain.getOutputDevice().getId()) + "/down";
             logger.debug("Sending message to topic {}", topic);
-            mqttClient.sendData(result.toBytes(), topic);
+            try {
+                mqttClient.sendData(result.getValue().getBytes("UTF-8"), topic);
+            } catch (UnsupportedEncodingException e) {
+                logger.error("Exception during message sending.", e);
+            }
         }
     }
 

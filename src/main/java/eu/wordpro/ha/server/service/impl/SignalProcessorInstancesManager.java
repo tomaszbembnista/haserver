@@ -2,6 +2,7 @@ package eu.wordpro.ha.server.service.impl;
 
 import eu.wordpro.ha.api.InvalidConfigurationException;
 import eu.wordpro.ha.api.InvalidStateException;
+import eu.wordpro.ha.api.StateListener;
 import eu.wordpro.ha.server.domain.SignalProcessor;
 import eu.wordpro.ha.server.repository.SignalProcessorRepository;
 import org.slf4j.Logger;
@@ -65,6 +66,7 @@ public class SignalProcessorInstancesManager {
         eu.wordpro.ha.api.SignalProcessor result;
         try {
             result = (eu.wordpro.ha.api.SignalProcessor) instance;
+            result.setListener(new MyStateListener());
         }catch(ClassCastException e){
             logger.warn("Could not instantiate signal processor. Error: {}", e.getMessage());
             updateStatus(signalProcessorDescription, "Could not instantiate. " + e.getMessage());
@@ -84,7 +86,10 @@ public class SignalProcessorInstancesManager {
             return false;
         }
         try {
-            instance.setState(description.getState());
+            String state = description.getState();
+            if (state != null) {
+                instance.setState(state);
+            }
         } catch (InvalidStateException e) {
             logger.warn("Could not initialize signal processor. Error during applying state: {}", e.getMessage());
             updateStatus(description, "Could not initialize. Error during applying state:" + e.getMessage());
@@ -110,6 +115,19 @@ public class SignalProcessorInstancesManager {
             logger.info("Saving state of {}", entry);
             signalProcessor.setState(entry.getValue().getState());
             signalProcessorRepository.save(signalProcessor);
+        }
+    }
+
+    private class MyStateListener implements StateListener{
+
+        @Override
+        public void onConfigurationChanged(String s) {
+
+        }
+
+        @Override
+        public void onStateChanged(String s) {
+
         }
     }
 

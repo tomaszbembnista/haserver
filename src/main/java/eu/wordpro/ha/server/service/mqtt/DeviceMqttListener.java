@@ -1,13 +1,13 @@
 package eu.wordpro.ha.server.service.mqtt;
 
 import eu.wordpro.ha.api.SignalProcessorData;
-import eu.wordpro.ha.api.model.BytesSignalProcessorData;
+import eu.wordpro.ha.api.model.ProcessingData;
 import eu.wordpro.ha.server.service.DeviceService;
 import eu.wordpro.ha.server.service.dto.DeviceDTO;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import java.util.LinkedList;
+import java.nio.charset.Charset;
 
 public class DeviceMqttListener implements IMqttMessageListener {
 
@@ -21,11 +21,11 @@ public class DeviceMqttListener implements IMqttMessageListener {
 
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
-        BytesSignalProcessorData rawData = new BytesSignalProcessorData(message.getPayload());
-        rawData.setName("input");
-        LinkedList<SignalProcessorData> input = new LinkedList<>();
-        input.add(rawData);
-        deviceService.processInputData(device.getId(), input);
+        ProcessingData processingData = new ProcessingData();
+        String inputValue = new String(message.getPayload(), Charset.forName("UTF-8"));
+        SignalProcessorData inputData = new SignalProcessorData("input", inputValue);
+        processingData.add(inputData);
+        deviceService.processInputData(device.getId(), processingData);
     }
 
     public String getTopic(){

@@ -1,6 +1,7 @@
 package eu.wordpro.ha.server.service.impl;
 
 import eu.wordpro.ha.api.SignalProcessorData;
+import eu.wordpro.ha.api.model.ProcessingData;
 import eu.wordpro.ha.server.domain.Device;
 import eu.wordpro.ha.server.domain.ProcessingChain;
 import eu.wordpro.ha.server.domain.Space;
@@ -87,7 +88,7 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public void processInputData(Long deviceId, LinkedList<SignalProcessorData> inputs) {
+    public void processInputData(Long deviceId, ProcessingData input) {
         Device device = deviceRepository.findById(deviceId).orElse(null);
         if (device == null){
             logger.warn("Device with id {} not found", deviceId);
@@ -95,8 +96,7 @@ public class DeviceServiceImpl implements DeviceService {
         }
         Set<ProcessingChain> processingChains = device.getProcessingChains();
         for (ProcessingChain processingChain : processingChains){
-            LinkedList<SignalProcessorData> newInputs = new LinkedList<>(inputs);
-            processingChainService.executeProcessingChain(processingChain, newInputs);
+            processingChainService.executeProcessingChain(processingChain, input.copy());
         }
     }
 
