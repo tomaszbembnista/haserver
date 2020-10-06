@@ -9,6 +9,7 @@
     <include file="db/changelog/changes/20191122_4_constraints.xml" relativeToChangelogFile="false"/>
     <include file="db/changelog/changes/20191124_5_alter_tables.xml" relativeToChangelogFile="false"/>
     <include file="db/changelog/changes/20191126_6_alter_tables.xml" relativeToChangelogFile="false"/>
+    <include file="db/changelog/changes/20201005_7_alter_tables.xml" relativeToChangelogFile="false"/>
 
 
 

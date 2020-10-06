@@ -15,6 +15,9 @@ public class Space {
     @SequenceGenerator(name = "sequenceGenerator", sequenceName = "hibernate_sequence", allocationSize = 1)
     private Long id;
 
+    @OneToMany(mappedBy = "space")
+    private Set<SignalProcessor> signalProcessors = new HashSet<>();
+
     @NotNull
     @Column(name = "name")
     private String name;
@@ -72,13 +75,15 @@ public class Space {
         this.devices = devices;
     }
 
-    public Space getParent() {
-        return parent;
-    }
+    public Space getParent() { return parent; }
 
     public void setParent(Space parent) {
         this.parent = parent;
     }
+
+    public Set<SignalProcessor> getSignalProcessors() { return signalProcessors; }
+
+    public void setSignalProcessors(Set<SignalProcessor> signalProcessors) { this.signalProcessors = signalProcessors; }
 
     @Override
     public boolean equals(Object o) {

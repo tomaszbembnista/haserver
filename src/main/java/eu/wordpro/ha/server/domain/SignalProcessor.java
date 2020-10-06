@@ -34,6 +34,10 @@ public class SignalProcessor {
     @OneToMany(mappedBy = "signalProcessor")
     private Set<ProcessingChain> processingChains = new HashSet<>();
 
+    @ManyToOne
+    @JoinColumn(name = "space_id")
+    private Space space;
+
     public Long getId() {
         return id;
     }
@@ -89,6 +93,10 @@ public class SignalProcessor {
     public void setProcessingChains(Set<ProcessingChain> processingChains) {
         this.processingChains = processingChains;
     }
+
+    public Space getSpace() { return space; }
+
+    public void setSpace(Space space) { this.space = space; }
 
     @Override
     public String toString() {
