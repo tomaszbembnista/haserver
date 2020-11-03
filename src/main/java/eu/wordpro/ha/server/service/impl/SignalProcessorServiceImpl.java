@@ -90,6 +90,14 @@ public class SignalProcessorServiceImpl implements SignalProcessorService {
         return null;
     }
 
+    @Override
+    public List<SignalProcessorDTO> findSignalProcessorsInSpace(Long id) {
+        return signalProcessorRepository.findAllBySpaceId(id)
+                .stream()
+                .map(signalProcessorMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
     private void processProcessorResult(SignalProcessorData signalProcessorData, SignalProcessor signalProcessor) {
         if (signalProcessorData == null) {
             return;

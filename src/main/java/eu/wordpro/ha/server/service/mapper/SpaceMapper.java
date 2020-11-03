@@ -14,6 +14,7 @@ public interface SpaceMapper extends EntityMapper<SpaceDTO, Space> {
     @Mapping(source = "parentId", target = "parent")
     @Mapping(target = "subspaces", ignore = true)
     @Mapping(target = "devices", ignore = true)
+    @Mapping(target = "signalProcessors", ignore = true)
     Space toEntity(SpaceDTO spaceDTO);
 
     default Space fromId(Long id) {

@@ -1,8 +1,10 @@
 package eu.wordpro.ha.server.rest;
 
 import eu.wordpro.ha.server.service.DeviceService;
+import eu.wordpro.ha.server.service.SignalProcessorService;
 import eu.wordpro.ha.server.service.SpaceService;
 import eu.wordpro.ha.server.service.dto.DeviceDTO;
+import eu.wordpro.ha.server.service.dto.SignalProcessorDTO;
 import eu.wordpro.ha.server.service.dto.SpaceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,9 @@ public class SpaceResource {
 
     @Autowired
     DeviceService deviceService;
+
+    @Autowired
+    SignalProcessorService signalProcessorService;
 
     @PostMapping("/spaces")
     public ResponseEntity<SpaceDTO> createSpace(@Valid @RequestBody SpaceDTO space) throws URISyntaxException {
@@ -68,6 +73,16 @@ public class SpaceResource {
             return deviceService.findDevicesInSpace(null);
         }
         return deviceService.findDevicesInSpace(id);
+    }
+
+    @GetMapping("/spaces/{id}/signalProcessors")
+    public List<SignalProcessorDTO> getSignalProcessorsBelongingToSpace(@Valid @PathVariable Long id) throws  URISyntaxException {
+        System.out.println("Getting signal processors");
+        if (id == null || id.equals(new Long(-1))) {
+            System.out.println("Getting signal processors with null");
+            return signalProcessorService.findSignalProcessorsInSpace(null);
+        }
+        return signalProcessorService.findSignalProcessorsInSpace(id);
     }
 
     @GetMapping("/spaces/{id}")

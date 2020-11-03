@@ -14,6 +14,7 @@ public interface SignalProcessorMapper extends EntityMapper<SignalProcessorDTO, 
     SignalProcessorDTO toDto(SignalProcessor space);
 
     @Mapping(source = "spaceId", target = "space")
+    @Mapping(target = "processingChains", ignore = true)
     @Override
     SignalProcessor toEntity(SignalProcessorDTO spaceDTO);
 

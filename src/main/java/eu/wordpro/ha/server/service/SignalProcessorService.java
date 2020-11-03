@@ -9,4 +9,5 @@ import java.util.List;
 public interface SignalProcessorService extends Service<SignalProcessorDTO> {
     List<ProcessorOperationDesc> getPossibleOperations(Long processorId);
     String executeOperation(Long processorId, String operationName, List<ProcessorOperationArgument> arguments);
+    List<SignalProcessorDTO> findSignalProcessorsInSpace(Long id);
 }
