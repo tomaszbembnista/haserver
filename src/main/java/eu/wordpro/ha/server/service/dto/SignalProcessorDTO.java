@@ -8,6 +8,7 @@ public class SignalProcessorDTO {
     private String status;
     private String configuration;
     private String state;
+    private Long spaceId;
 
     public Long getId() {
         return id;
@@ -55,5 +56,13 @@ public class SignalProcessorDTO {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public Long getSpaceId() {
+        return spaceId;
+    }
+
+    public void setSpaceId(Long spaceId) {
+        this.spaceId = spaceId;
     }
 }
