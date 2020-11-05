@@ -102,13 +102,13 @@ public class SignalProcessorServiceImpl implements SignalProcessorService {
         if (signalProcessorData == null) {
             return;
         }
-        threadPoolsProvider.getExecutorService().submit(() -> {
+        //threadPoolsProvider.getExecutorService().submit(() -> {
             for (ProcessingChain processingChain : signalProcessor.getProcessingChains()) {
                 ProcessingData processingData = new ProcessingData();
                 processingData.add(signalProcessorData);
                 processingChainService.sendDataToOuputDevice(processingChain, signalProcessorData);
                 processingChainService.executeProcessingChain(processingChain.getNext(), processingData);
             }
-        });
+        //});
     }
 }

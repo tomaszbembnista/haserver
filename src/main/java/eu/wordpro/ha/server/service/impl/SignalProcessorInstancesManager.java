@@ -87,9 +87,7 @@ public class SignalProcessorInstancesManager {
         }
         try {
             String state = description.getState();
-            if (state != null) {
-                instance.setState(state);
-            }
+            instance.setState(state);
         } catch (InvalidStateException e) {
             logger.warn("Could not initialize signal processor. Error during applying state: {}", e.getMessage());
             updateStatus(description, "Could not initialize. Error during applying state:" + e.getMessage());
