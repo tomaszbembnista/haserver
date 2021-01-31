@@ -19,7 +19,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class MqttClient {
+public class MqttClient implements MqttCallback{
 
     private final Logger log = LoggerFactory.getLogger(MqttClient.class);
 
@@ -32,16 +32,44 @@ public class MqttClient {
     @Value("${ha.mqtt.brokerUri}")
     private String brokerUrl;
 
+    ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
 
     MqttAsyncClient client;
 
+    public void sendData(byte[] toSend, String topic){
+        threadPoolsProvider.getExecutorService().submit(() ->{
+            try {
+                IMqttDeliveryToken token = client.publish(topic, toSend, 2, false);
+                token.waitForCompletion(10000);
+                log.debug("Message send to topic");
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+        });
+
+    }
+
+    public void restart(){
+        try {
+            IMqttToken token = client.disconnect();
+            token.waitForCompletion(10000);
+            setupConnection();
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
     @EventListener(ApplicationReadyEvent.class)
     private void setupConnection() throws MqttException {
-        client = new MqttAsyncClient(brokerUrl, "HA_SERVER");
-        threadPoolsProvider.getExecutorService().submit(() -> this.connect(client));
+        client = new MqttAsyncClient(brokerUrl, "HA_SERVER_ONE");
+        client.setCallback(this);
+        singleThreadExecutor.submit(() -> this.connect(client));
     }
 
     private void connect(MqttAsyncClient client){
+        if (client.isConnected()){
+            return;
+        }
         IMqttToken connectToken;
         try {
             connectToken = client.connect();
@@ -75,21 +103,24 @@ public class MqttClient {
             token.waitForCompletion(10000);
             log.info("Subscribed to topic {}", topicName);
         }
-
-    }
-
-    public void sendData(byte[] toSend, String topic){
-        threadPoolsProvider.getExecutorService().submit(() ->{
-            try {
-                IMqttDeliveryToken token = client.publish(topic, toSend, 2, false);
-                token.waitForCompletion(10000);
-                log.debug("Message send to topic");
-            } catch (MqttException e) {
-                e.printStackTrace();
-            }
-        });
-
     }
 
 
+
+
+    @Override
+    public void connectionLost(Throwable throwable) {
+        log.warn("Connection to mqtt server lost");
+        singleThreadExecutor.submit(() -> this.connect(client));
+    }
+
+    @Override
+    public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
+
+    }
+
+    @Override
+    public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+
+    }
 }

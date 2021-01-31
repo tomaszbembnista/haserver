@@ -42,6 +42,11 @@ public class SignalProcessorInstancesManager {
         return instances.get(signalProcessorDescription.getId());
     }
 
+    public synchronized void clear(){
+        saveState();
+        instances.clear();
+    }
+
     private eu.wordpro.ha.api.SignalProcessor instantiateSignalProcessor(SignalProcessor signalProcessorDescription) {
         logger.info("Instantiating a signal processor: {}", signalProcessorDescription);
         String className = signalProcessorDescription.getClassName();

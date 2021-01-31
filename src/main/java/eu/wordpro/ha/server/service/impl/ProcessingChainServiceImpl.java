@@ -92,7 +92,7 @@ public class ProcessingChainServiceImpl implements ProcessingChainService {
     public void executeProcessingChain(ProcessingChain processingChain, ProcessingData inputs) {
         logger.info("Executing processing chain element.");
         if (processingChain == null) {
-            logger.info("Processing chain element is null.");
+            logger.warn("Processing chain element is null.");
             return;
         }
         SignalProcessor signalProcessorDesc = processingChain.getSignalProcessor();
@@ -101,12 +101,11 @@ public class ProcessingChainServiceImpl implements ProcessingChainService {
             return;
         }
         eu.wordpro.ha.api.SignalProcessor instance = signalProcessorInstancesManager.getInstance(signalProcessorDesc);
-        logger.info("Dupa kupa {}", instance);
+        logger.debug("Instance of processing chain {}", instance);
         if (instance == null) {
             logger.warn("Instance of signal processor in next chain element is null");
             return;
         }
-        logger.info("Dupa kupa 1");
         logger.info("Signal processor {}:{} instantiated", signalProcessorDesc.getName(), signalProcessorDesc.getClassName());
         SignalProcessorData result;
         try {
